@@ -582,7 +582,7 @@ app.use('*', async (c, next) => {
 
 // Auth on all non-health routes
 app.use('*', async (c, next) => {
-  if (c.req.path === '/health' || c.req.method === 'OPTIONS') {
+  if (c.req.path === '/' || c.req.path === '/health' || c.req.method === 'OPTIONS') {
     return next();
   }
   const err = authMiddleware(c.req.header('X-Echo-API-Key'), c.req.header('X-Commander-Override'), c.env);
@@ -591,6 +591,8 @@ app.use('*', async (c, next) => {
 });
 
 // ─── 1. GET /health ──────────────────────────────────────────────────────────
+
+app.get("/", (c) => c.json({ service: 'echo-chaos-engineer', status: 'operational' }));
 
 app.get('/health', async (c) => {
   let dbOk = false;
