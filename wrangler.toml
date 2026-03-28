@@ -25,3 +25,7 @@ service = "echo-alert-router"
 [[services]]
 binding = "CIRCUIT_BREAKER"
 service = "echo-circuit-breaker"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "echo_metrics"
