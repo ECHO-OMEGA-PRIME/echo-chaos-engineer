@@ -9,6 +9,7 @@ interface Env {
   SHARED_BRAIN: Fetcher;
   ALERT_ROUTER: Fetcher;
   CIRCUIT_BREAKER: Fetcher;
+  ECHO_API_KEY: string;
 }
 
 type ExperimentType = 'latency_injection' | 'error_injection' | 'timeout' | 'partial_failure' | 'load_spike' | 'dependency_kill';
@@ -175,8 +176,8 @@ function parseSafety(raw: unknown): SafetyConfig {
 
 // ─── Auth Middleware ─────────────────────────────────────────────────────────
 
-function authMiddleware(apiKey: string | null | undefined, commanderOverride: string | null | undefined): Response | null {
-  if (apiKey !== 'echo-omega-prime-forge-x-2026') {
+function authMiddleware(apiKey: string | null | undefined, commanderOverride: string | null | undefined, env: Env): Response | null {
+  if (!env.ECHO_API_KEY || apiKey !== env.ECHO_API_KEY) {
     return jsonErr('Unauthorized: invalid or missing X-Echo-API-Key', 401);
   }
   return null;
@@ -584,7 +585,7 @@ app.use('*', async (c, next) => {
   if (c.req.path === '/health' || c.req.method === 'OPTIONS') {
     return next();
   }
-  const err = authMiddleware(c.req.header('X-Echo-API-Key'), c.req.header('X-Commander-Override'));
+  const err = authMiddleware(c.req.header('X-Echo-API-Key'), c.req.header('X-Commander-Override'), c.env);
   if (err) return err;
   return next();
 });
