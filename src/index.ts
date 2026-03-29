@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
+const ALLOWED_ORIGINS = ['https://echo-ept.com','https://www.echo-ept.com','https://echo-op.com','https://profinishusa.com','https://bgat.echo-op.com'];
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Env {
@@ -564,7 +566,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 // CORS
 app.use('*', cors({
-  origin: '*',
+  origin: (o) => ALLOWED_ORIGINS.includes(o) ? o : ALLOWED_ORIGINS[0],
   allowHeaders: ['Content-Type', 'X-Echo-API-Key', 'X-Commander-Override', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
